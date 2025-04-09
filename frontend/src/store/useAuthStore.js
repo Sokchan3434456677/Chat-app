@@ -98,6 +98,13 @@ export const useAuthStore = create((set, get) => ({
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });
+     // Listen for new notifications
+// Listen for new notifications
+socket.on("newNotification", (notification) => {
+  toast.success(`New message from ${notification.senderUsername}: ${notification.text}`, {
+    duration: 5000, // Set timeout duration in milliseconds (e.g., 5000ms = 5 seconds)
+  });
+});
   },
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
