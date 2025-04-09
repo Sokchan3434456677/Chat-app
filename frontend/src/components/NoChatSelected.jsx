@@ -42,7 +42,7 @@ const NoChatSelected = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/auth/check", {
+        const response = await fetch("https://chat-app-rust-ten-63.vercel.app/api/auth/check", {
           credentials: "include", // needed for cookies/sessions
         });
         
