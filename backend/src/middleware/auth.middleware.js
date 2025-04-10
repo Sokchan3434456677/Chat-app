@@ -1,33 +1,9 @@
-import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 export const protectRoute = async (req, res, next) => {
   try {
-    if (process.env.NODE_ENV === "production") {
-      req.user = {}; // Mock user object for production
-      return next();
-    }
-
-    const token = req.cookies.jwt;
-
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized - No Token Provided" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (!decoded) {
-      return res.status(401).json({ message: "Unauthorized - Invalid Token" });
-    }
-
-    const user = await User.findById(decoded.userId).select("-password");
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    req.user = user;
-
+    // Allow all requests to pass through without JWT verification
+    req.user = {}; // Mock user object
     next();
   } catch (error) {
     console.log("Error in protectRoute middleware: ", error.message);

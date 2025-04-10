@@ -1,4 +1,3 @@
-import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
@@ -28,11 +27,7 @@ export const signup = async (req, res) => {
     });
 
     if (newUser) {
-      if (process.env.NODE_ENV !== "production") {
-        generateToken(newUser._id, res);
-      }
       await newUser.save();
-
       res.status(201).json({
         _id: newUser._id,
         fullName: newUser.fullName,
@@ -62,10 +57,6 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    if (process.env.NODE_ENV !== "production") {
-      generateToken(user._id, res);
-    }
-
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
@@ -80,9 +71,6 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
-    if (process.env.NODE_ENV !== "production") {
-      res.cookie("jwt", "", { maxAge: 0 });
-    }
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.log("Error in logout controller", error.message);
