@@ -60,6 +60,12 @@ export const sendMessage = async (req, res) => {
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
+
+      // Emit a notification event
+      io.to(receiverSocketId).emit("newNotification", {
+        senderUsername: req.user.fullName,
+        text: text || "Sent an image",
+      });
     }
 
     res.status(201).json(newMessage);

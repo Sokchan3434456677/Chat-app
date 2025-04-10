@@ -69,14 +69,23 @@ export const useAuthStore = create((set, get) => ({
   },
 
   updateProfile: async (data) => {
+    if (!data.profilePic) {
+      toast.error("Profile picture is required");
+      return;
+    }
     set({ isUpdatingProfile: true });
     try {
-      const res = await axiosInstance.put("/auth/update-profile", data);
+      const formData = new FormData();
+      formData.append("profilePic", data.profilePic);
+
+      const res = await axiosInstance.put("/auth/update-profile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
     } catch (error) {
-      console.log("error in update profile:", error);
-      toast.error(error.response.data.message);
+      console.log("Error in update profile:", error);
+      toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
       set({ isUpdatingProfile: false });
     }
@@ -98,13 +107,16 @@ export const useAuthStore = create((set, get) => ({
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });
-     // Listen for new notifications
-// Listen for new notifications
-socket.on("newNotification", (notification) => {
-  toast.success(`New message from ${notification.senderUsername}: ${notification.text}`, {
-    duration: 5000, // Set timeout duration in milliseconds (e.g., 5000ms = 5 seconds)
-  });
-});
+    // Listen for new notifications
+    socket.on("newNotification", (notification) => {
+      // Play notification sound
+      const audio = new Audio("/sounds/notification.mp3");
+      audio.play();
+
+      toast.success(`New message from ${notification.senderUsername}: ${notification.text}`, {
+        duration: 5000, // Set timeout duration in milliseconds
+      });
+    });
   },
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
