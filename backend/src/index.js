@@ -25,8 +25,6 @@ app.use(
   })
 );
 
-app.use(cookieParser()); // Add this middleware to parse cookies
-
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
